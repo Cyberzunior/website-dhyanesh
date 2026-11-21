@@ -1,0 +1,350 @@
+/* Aerospace / Mission Control theme
+   Applied when <html data-theme="aerospace">. The default theme is untouched. */
+
+[data-theme="aerospace"] {
+  --bg: #05080F;
+  --bg-elevated: #0B1220;
+  --surface: #0B1220;
+  --border: #1B2A41;
+  --line: #1B2A41;
+  --text: #E6EDF7;
+  --ink: #E6EDF7;
+  --text-muted: #8A9BB5;
+  --muted: #8A9BB5;
+  --accent: #4CC9F0;
+  --accent-ink: #04121B;
+  --accent-soft: rgba(76, 201, 240, 0.12);
+  --accent-2: #FF6B35;
+  --success: #3DDC97;
+  --glow: rgba(76, 201, 240, 0.35);
+  --serif: "Chakra Petch", "Orbitron", "Inter", system-ui, sans-serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --court: #0B1220;
+  --court-edge: #12203A;
+  --band: #1B2A41;
+  --cork: #FF6B35;
+  color-scheme: dark;
+}
+
+[data-theme="aerospace"] body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(76, 201, 240, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(76, 201, 240, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  background-attachment: fixed;
+}
+
+[data-theme="aerospace"] #app { position: relative; z-index: 1; }
+
+/* Typography */
+[data-theme="aerospace"] h1,
+[data-theme="aerospace"] h2,
+[data-theme="aerospace"] h3 {
+  font-family: var(--serif);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="aerospace"] .display { letter-spacing: 0.02em; }
+[data-theme="aerospace"] .kicker,
+[data-theme="aerospace"] .meta,
+[data-theme="aerospace"] .facts dt,
+[data-theme="aerospace"] .score-label,
+[data-theme="aerospace"] .pager span,
+[data-theme="aerospace"] .project-aside h2 {
+  font-family: var(--mono);
+}
+
+[data-theme="aerospace"] .score-num {
+  font-family: var(--mono);
+  color: var(--accent);
+  text-shadow: 0 0 24px var(--glow);
+}
+
+[data-theme="aerospace"] .score-label { color: var(--muted); }
+[data-theme="aerospace"] .scoreboard,
+[data-theme="aerospace"] .score { border-color: var(--border); }
+
+/* Section labels */
+[data-theme="aerospace"] .page-head:not(.project-head) h1::before,
+[data-theme="aerospace"] .block-head h2::before {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+  content: "//";
+}
+[data-theme="aerospace"] .page-head:has(+ .filters) h1::before { content: "// 01 PROJECTS"; }
+[data-theme="aerospace"] .page-head:has(+ .about) h1::before { content: "// 02 ABOUT"; }
+[data-theme="aerospace"] .page-head:has(+ .timeline-wrap) h1::before { content: "// 03 EXPERIENCE"; }
+[data-theme="aerospace"] .page-head:has(+ .email-row) h1::before { content: "// 04 CONTACT"; }
+[data-theme="aerospace"] .block-head h2::before { content: "// 01 PROJECTS"; }
+
+/* Status chips */
+[data-theme="aerospace"] .tags { gap: 8px; }
+[data-theme="aerospace"] .tags li {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--accent);
+}
+
+/* Buttons and links */
+[data-theme="aerospace"] .button {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  transition: background 0.22s ease-out, color 0.22s ease-out, box-shadow 0.22s ease-out, transform 0.22s ease-out;
+}
+[data-theme="aerospace"] .button:hover,
+[data-theme="aerospace"] .button:focus-visible {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 0 24px var(--glow);
+  transform: translateY(-2px);
+}
+[data-theme="aerospace"] .project-aside .button {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+  color: #160702;
+}
+[data-theme="aerospace"] .project-aside .button:hover,
+[data-theme="aerospace"] .project-aside .button:focus-visible {
+  background: var(--accent-2);
+  color: #160702;
+  box-shadow: 0 0 24px rgba(255, 107, 53, 0.45);
+}
+
+[data-theme="aerospace"] a { color: var(--accent); }
+[data-theme="aerospace"] .text-link,
+[data-theme="aerospace"] .site-header nav a,
+[data-theme="aerospace"] .site-footer a {
+  text-decoration: none;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 0% 1px;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease-out;
+}
+[data-theme="aerospace"] .text-link:hover,
+[data-theme="aerospace"] .text-link:focus-visible,
+[data-theme="aerospace"] .site-header nav a:hover,
+[data-theme="aerospace"] .site-header nav a:focus-visible,
+[data-theme="aerospace"] .site-footer a:hover,
+[data-theme="aerospace"] .site-footer a:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* HUD corner brackets */
+[data-theme="aerospace"] .card,
+[data-theme="aerospace"] .project-aside,
+[data-theme="aerospace"] .pager a {
+  --bracket: rgba(76, 201, 240, 0.55);
+  background-image:
+    linear-gradient(var(--bracket), var(--bracket)),
+    linear-gradient(var(--bracket), var(--bracket)),
+    linear-gradient(var(--bracket), var(--bracket)),
+    linear-gradient(var(--bracket), var(--bracket)),
+    linear-gradient(var(--bracket), var(--bracket)),
+    linear-gradient(var(--bracket), var(--bracket)),
+    linear-gradient(var(--bracket), var(--bracket)),
+    linear-gradient(var(--bracket), var(--bracket));
+  background-repeat: no-repeat;
+  background-size: 12px 1px, 1px 12px, 12px 1px, 1px 12px, 12px 1px, 1px 12px, 12px 1px, 1px 12px;
+  background-position: left top, left top, right top, right top, left bottom, left bottom, right bottom, right bottom;
+  border-radius: 6px;
+}
+
+[data-theme="aerospace"] .card {
+  background-color: var(--bg-elevated);
+  border-color: var(--border);
+  transition: transform 0.22s ease-out, border-color 0.22s ease-out, box-shadow 0.22s ease-out, opacity 0.6s ease;
+}
+[data-theme="aerospace"] .card:hover,
+[data-theme="aerospace"] .card:focus-visible {
+  transition-delay: 0s;
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px -16px var(--glow), 0 0 0 1px var(--accent);
+}
+
+[data-theme="aerospace"] .project-aside,
+[data-theme="aerospace"] .pager a { background-color: var(--bg-elevated); border-color: var(--border); }
+[data-theme="aerospace"] .pager a { border-radius: 6px; transition: transform 0.22s ease-out, border-color 0.22s ease-out, box-shadow 0.22s ease-out, opacity 0.6s ease; }
+[data-theme="aerospace"] .pager a:hover,
+[data-theme="aerospace"] .pager a:focus-visible { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 14px 34px -16px var(--glow); }
+
+[data-theme="aerospace"] .note,
+[data-theme="aerospace"] .media-item img,
+[data-theme="aerospace"] .media-item video,
+[data-theme="aerospace"] .project-image { border-radius: 6px; }
+
+/* Home hero */
+[data-theme="aerospace"] .home-hero {
+  background: radial-gradient(ellipse 70% 60% at 72% 30%, rgba(76, 201, 240, 0.12), transparent 70%), linear-gradient(var(--bg), #071021);
+}
+[data-theme="aerospace"] .zone {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+[data-theme="aerospace"] .zone:hover,
+[data-theme="aerospace"] .zone:focus-visible,
+[data-theme="aerospace"] .zone.chosen {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+/* Orbit rings */
+.orbit-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.orbit-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border: 1px solid rgba(76, 201, 240, 0.22);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scaleY(0.55);
+  animation: orbit-spin 60s linear infinite;
+}
+.orbit-ring.r1 { width: 135%; height: 135%; }
+.orbit-ring.r2 {
+  width: 100%;
+  height: 100%;
+  border-color: rgba(76, 201, 240, 0.14);
+  transform: translate(-50%, -50%) scaleY(0.65) rotate(-18deg);
+  animation: orbit-spin-2 90s linear infinite;
+}
+.orbit-dot {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 14px var(--glow);
+}
+@keyframes orbit-spin {
+  from { transform: translate(-50%, -50%) scaleY(0.55) rotate(0deg); }
+  to { transform: translate(-50%, -50%) scaleY(0.55) rotate(360deg); }
+}
+@keyframes orbit-spin-2 {
+  from { transform: translate(-50%, -50%) scaleY(0.65) rotate(-18deg); }
+  to { transform: translate(-50%, -50%) scaleY(0.65) rotate(342deg); }
+}
+
+/* Starfield */
+#starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Trajectory scroll line */
+.trajectory {
+  position: fixed;
+  right: 18px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 30;
+  pointer-events: none;
+  background: rgba(76, 201, 240, 0.12);
+}
+.trajectory-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(var(--accent), var(--accent-2));
+  transform-origin: top;
+  transform: scaleY(0);
+}
+.trajectory-tip {
+  position: absolute;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  background: var(--accent-2);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  box-shadow: 0 0 10px var(--glow);
+}
+@media (max-width: 720px) {
+  .trajectory { display: none; }
+}
+
+/* Boot cursor */
+.boot-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 0.08em;
+  background: var(--accent);
+  vertical-align: -0.15em;
+  animation: boot-blink 1s steps(1) infinite;
+}
+@keyframes boot-blink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+
+/* Scroll reveal: 16px rise */
+[data-theme="aerospace"] [data-reveal] {
+  transform: translateY(16px);
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+  transition-delay: calc(var(--d, 0) * 80ms);
+}
+[data-theme="aerospace"] [data-reveal].in { opacity: 1; transform: none; }
+[data-theme="aerospace"] .card.in:hover,
+[data-theme="aerospace"] .card.in:focus-visible,
+[data-theme="aerospace"] .pager a.in:hover,
+[data-theme="aerospace"] .pager a.in:focus-visible { transform: translateY(-4px); }
+
+/* Focus visibility */
+[data-theme="aerospace"] :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="aerospace"] [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  [data-theme="aerospace"] .orbit-ring,
+  [data-theme="aerospace"] .orbit-dot,
+  [data-theme="aerospace"] .boot-cursor,
+  [data-theme="aerospace"] .marquee-track {
+    animation: none !important;
+  }
+  [data-theme="aerospace"] .card,
+  [data-theme="aerospace"] .button,
+  [data-theme="aerospace"] .pager a,
+  [data-theme="aerospace"] .text-link,
+  [data-theme="aerospace"] .site-header nav a,
+  [data-theme="aerospace"] .site-footer a {
+    transition: none !important;
+  }
+}
