@@ -279,13 +279,15 @@
     launchBoost = progress * visibility;
     var count = stage.querySelector('.launch-count');
     if (count) {
-      count.textContent = progress >= 0.97
+      var countText = progress >= 0.97
         ? 'LIFTOFF'
         : 'T-MINUS ' + Math.max(0, Math.ceil((1 - progress) * 10));
+      if (count.textContent !== countText) count.textContent = countText;
     }
     var alt = stage.querySelector('.launch-alt');
     if (alt) {
-      alt.textContent = 'ALT ' + String(Math.round(progress * 420)).padStart(3, '0');
+      var altText = 'ALT ' + String(Math.round(progress * 420)).padStart(3, '0');
+      if (alt.textContent !== altText) alt.textContent = altText;
     }
   }
 
