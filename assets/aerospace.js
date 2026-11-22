@@ -26,6 +26,7 @@
   var raf = 0;
   var w = 0;
   var h = 0;
+  var launchBoost = 0;
 
   function makeStars() {
     var count = window.innerWidth <= 720 ? 60 : 120;
@@ -52,12 +53,23 @@
       var alpha = s.base + Math.sin(t * s.speed + s.phase) * s.amp;
       if (alpha < 0.05) alpha = 0.05;
       if (alpha > 0.9) alpha = 0.9;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = s.cyan
+      var color = s.cyan
         ? 'rgba(76, 201, 240, ' + alpha.toFixed(3) + ')'
         : 'rgba(230, 237, 247, ' + alpha.toFixed(3) + ')';
-      ctx.fill();
+      if (launchBoost > 0.04) {
+        var streak = 2 + launchBoost * 26;
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x, s.y + streak);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = s.r * 0.9;
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      }
     }
   }
 
@@ -176,7 +188,7 @@
 
   /* ---------- Rocket shuttle ---------- */
   function replaceShuttles() {
-    var svgs = document.querySelectorAll('.shuttle svg, .marquee-shuttle svg');
+    var svgs = document.querySelectorAll('.shuttle svg, .marquee-shuttle svg, .timeline-shuttle svg');
     for (var i = 0; i < svgs.length; i++) {
       if (svgs[i].getAttribute('data-rocket')) continue;
       svgs[i].outerHTML = ROCKET_SVG;
@@ -194,16 +206,7 @@
       '<div class="scene-glow"></div>' +
       '<div class="scene-planet planet-a"></div>' +
       '<div class="scene-planet planet-b"></div>' +
-      '<div class="scene-orbit"><span class="scene-sat"></span></div>' +
-      '<div class="scene-rocket">' +
-        '<svg viewBox="0 0 64 64" aria-hidden="true">' +
-          '<path class="rk-flame-big" d="M26 52 L32 64 L38 52 Z" />' +
-          '<path class="rk-body-big" d="M32 2 C40 10 44 22 44 34 L44 48 L20 48 L20 34 C20 22 24 10 32 2 Z" />' +
-          '<path class="rk-fin-big" d="M20 40 L9 56 L21 50 Z" />' +
-          '<path class="rk-fin-big" d="M44 40 L55 56 L43 50 Z" />' +
-          '<circle class="rk-window-big" cx="32" cy="28" r="6" />' +
-        '</svg>' +
-      '</div>';
+      '<div class="scene-orbit"><span class="scene-sat"></span></div>';
     stage.prepend(scene);
     var plane = stage.querySelector('.court-plane');
     if (plane && !plane.querySelector('.scene-radar')) {
@@ -211,6 +214,100 @@
         '<div class="scene-radar"></div>' +
         '<div class="scene-hud">Mission control</div>');
     }
+    buildLaunchLayer(stage);
+  }
+
+  /* ---------- Launch layer (scroll-driven lift-off) ---------- */
+  function buildLaunchLayer(stage) {
+    if (!stage || stage.querySelector('.launch-layer')) return;
+    var layer = document.createElement('div');
+    layer.className = 'launch-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML =
+      '<div class="launch-smoke"></div>' +
+      '<div class="launch-trail"></div>' +
+      '<div class="scene-rocket">' +
+        '<div class="scene-rocket-body">' +
+          '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+            '<path class="rk-flame-big" d="M26 52 L32 64 L38 52 Z" />' +
+            '<path class="rk-body-big" d="M32 2 C40 10 44 22 44 34 L44 48 L20 48 L20 34 C20 22 24 10 32 2 Z" />' +
+            '<path class="rk-fin-big" d="M20 40 L9 56 L21 50 Z" />' +
+            '<path class="rk-fin-big" d="M44 40 L55 56 L43 50 Z" />' +
+            '<circle class="rk-window-big" cx="32" cy="28" r="6" />' +
+          '</svg>' +
+        '</div>' +
+      '</div>' +
+      '<div class="launch-hud">' +
+        '<span class="launch-count">T-MINUS 10</span>' +
+        '<span class="launch-alt">ALT 000</span>' +
+        '<span class="launch-meter"><i></i></span>' +
+      '</div>';
+    stage.appendChild(layer);
+  }
+
+  /* ---------- Home launch cue and scroll sequence ---------- */
+  function buildHomeCue() {
+    var intro = document.querySelector('.home-hero .home-intro');
+    if (!intro || intro.querySelector('.launch-cue')) return;
+    var cue = document.createElement('p');
+    cue.className = 'launch-cue';
+    cue.setAttribute('aria-hidden', 'true');
+    cue.innerHTML = '<span class="launch-cue-line"></span> Scroll to launch';
+    var hint = intro.querySelector('.hint');
+    if (hint && hint.parentNode === intro) hint.insertAdjacentElement('afterend', cue);
+    else intro.appendChild(cue);
+  }
+
+  var launchRaf = 0;
+  function updateLaunch() {
+    launchRaf = 0;
+    var hero = document.querySelector('.home-hero');
+    var stage = hero ? hero.querySelector('.court-stage') : null;
+    if (!hero || !stage) { launchBoost = 0; return; }
+    if (reduceMotion.matches) {
+      hero.style.setProperty('--launch', '0');
+      launchBoost = 0;
+      return;
+    }
+    var rect = hero.getBoundingClientRect();
+    var start = rect.top + window.pageYOffset;
+    var travelled = window.pageYOffset - start;
+    var progress = travelled / Math.max(1, hero.offsetHeight * 0.82);
+    progress = Math.max(0, Math.min(1, progress));
+    hero.style.setProperty('--launch', progress.toFixed(3));
+    var visibility = Math.max(0, Math.min(1, rect.bottom / Math.max(1, hero.offsetHeight * 0.5)));
+    launchBoost = progress * visibility;
+    var count = stage.querySelector('.launch-count');
+    if (count) {
+      count.textContent = progress >= 0.97
+        ? 'LIFTOFF'
+        : 'T-MINUS ' + Math.max(0, Math.ceil((1 - progress) * 10));
+    }
+    var alt = stage.querySelector('.launch-alt');
+    if (alt) {
+      alt.textContent = 'ALT ' + String(Math.round(progress * 420)).padStart(3, '0');
+    }
+  }
+
+  function queueLaunch() {
+    if (!launchRaf) launchRaf = requestAnimationFrame(updateLaunch);
+  }
+
+  window.addEventListener('scroll', queueLaunch, { passive: true });
+  window.addEventListener('resize', queueLaunch, { passive: true });
+
+  /* ---------- About crew-profile HUD ---------- */
+  function buildAboutExtras() {
+    var portrait = document.querySelector('.about .portrait');
+    if (!portrait || portrait.querySelector('.portrait-hud')) return;
+    portrait.classList.add('hud-portrait');
+    portrait.insertAdjacentHTML('beforeend',
+      '<div class="portrait-orbit" aria-hidden="true"></div>' +
+      '<div class="portrait-scan" aria-hidden="true"></div>' +
+      '<div class="portrait-hud" aria-hidden="true">' +
+        '<span><b>CREW PROFILE</b> // 001</span>' +
+        '<span>TORONTO &middot; GRADE 11</span>' +
+      '</div>');
   }
 
   /* ---------- Theme copy ---------- */
@@ -225,6 +322,7 @@
       h1.setAttribute('data-theme-copy', '1');
       h1.textContent = 'SIGNAL LOST.';
       var head = h1.closest('.page-head') || h1.parentElement;
+      head.classList.add('error-page');
       var lead = head.querySelector('.lead');
       if (lead) lead.textContent = 'That trajectory left the launch corridor. This page does not exist.';
       var btn = head.querySelector('.button');
@@ -278,15 +376,23 @@
   maybeBoot();
   replaceShuttles();
   buildMissionScene();
+  buildLaunchLayer(document.querySelector('.court-stage'));
+  buildHomeCue();
+  buildAboutExtras();
   applyThemeCopy();
   startTicker();
+  queueLaunch();
   if (app) {
     var observer = new MutationObserver(function () {
       addOrbits();
       maybeBoot();
       replaceShuttles();
       buildMissionScene();
+      buildLaunchLayer(document.querySelector('.court-stage'));
+      buildHomeCue();
+      buildAboutExtras();
       applyThemeCopy();
+      queueLaunch();
     });
     observer.observe(app, { childList: true, subtree: true });
   }
