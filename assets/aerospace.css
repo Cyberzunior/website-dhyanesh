@@ -80,11 +80,11 @@
   margin-bottom: 12px;
   content: "//";
 }
-[data-theme="aerospace"] .page-head:has(+ .filters) h1::before { content: "// 01 PROJECTS"; }
-[data-theme="aerospace"] .page-head:has(+ .about) h1::before { content: "// 02 ABOUT"; }
-[data-theme="aerospace"] .page-head:has(+ .timeline-wrap) h1::before { content: "// 03 EXPERIENCE"; }
-[data-theme="aerospace"] .page-head:has(+ .email-row) h1::before { content: "// 04 CONTACT"; }
-[data-theme="aerospace"] .block-head h2::before { content: "// 01 PROJECTS"; }
+[data-theme="aerospace"] .page-head:has(+ .filters) h1::before { content: "// 01 MISSIONS"; }
+[data-theme="aerospace"] .page-head:has(+ .about) h1::before { content: "// 02 PROFILE"; }
+[data-theme="aerospace"] .page-head:has(+ .timeline-wrap) h1::before { content: "// 03 FLIGHT LOG"; }
+[data-theme="aerospace"] .page-head:has(+ .email-row) h1::before { content: "// 04 COMMS"; }
+[data-theme="aerospace"] .block-head h2::before { content: "// 01 MISSIONS"; }
 
 /* Status chips */
 [data-theme="aerospace"] .tags { gap: 8px; }
@@ -326,6 +326,176 @@
   outline-offset: 2px;
 }
 
+/* Holographic mission panel (badminton court removed) */
+[data-theme="aerospace"] .court-plane {
+  background:
+    linear-gradient(180deg, rgba(76, 201, 240, 0.10), rgba(11, 18, 32, 0.55)),
+    repeating-linear-gradient(0deg, rgba(76, 201, 240, 0.07) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, rgba(76, 201, 240, 0.07) 0 1px, transparent 1px 22px);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 0 1px var(--border), 0 50px 80px -30px #000c, 0 0 120px -20px var(--glow);
+  overflow: hidden;
+}
+[data-theme="aerospace"] .court-lines,
+[data-theme="aerospace"] .net { display: none; }
+[data-theme="aerospace"] .court-overlay .preview { stroke: var(--accent); }
+[data-theme="aerospace"] .court-overlay .trail { stroke: var(--accent); }
+[data-theme="aerospace"] .anchor {
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--glow);
+}
+[data-theme="aerospace"] .zone::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--glow);
+  vertical-align: 1px;
+}
+[data-theme="aerospace"] .zone:hover::before,
+[data-theme="aerospace"] .zone:focus-visible::before,
+[data-theme="aerospace"] .zone.chosen::before { background: var(--accent-ink); }
+
+/* Mission scene */
+.mission-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.scene-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(76, 201, 240, 0.10), transparent 70%);
+}
+.scene-planet { position: absolute; border-radius: 50%; }
+.scene-planet.planet-a {
+  right: -8%;
+  top: -10%;
+  width: 38%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 35% 30%, #1e4a70, #071021 72%);
+  box-shadow: 0 0 50px rgba(76, 201, 240, 0.25);
+}
+.scene-planet.planet-b {
+  left: -9%;
+  top: 8%;
+  width: 18%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 35% 30%, #2a2f4a, #0a0f1c 72%);
+  box-shadow: 0 0 30px rgba(76, 201, 240, 0.18);
+}
+.scene-orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 130%;
+  height: 130%;
+  border: 1px solid rgba(76, 201, 240, 0.16);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scaleY(0.5);
+  animation: orbit-spin 70s linear infinite;
+}
+.scene-sat {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 10px var(--glow);
+}
+.scene-rocket {
+  position: absolute;
+  left: 6%;
+  bottom: 8%;
+  width: 30%;
+  max-width: 130px;
+  animation: rocket-hover 6s ease-in-out infinite;
+}
+.scene-rocket svg { display: block; width: 100%; height: auto; overflow: visible; }
+.rk-body-big { fill: var(--text); stroke: var(--accent); stroke-width: 1.2; }
+.rk-fin-big { fill: var(--accent-2); }
+.rk-window-big { fill: var(--bg); stroke: var(--accent); stroke-width: 1.2; }
+.rk-flame-big {
+  fill: var(--accent-2);
+  opacity: 0.85;
+  transform-origin: 50% 0%;
+  animation: flame-flicker 0.18s ease-in-out infinite alternate;
+}
+.scene-radar {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg, rgba(76, 201, 240, 0.20), transparent 70deg);
+  animation: radar-sweep 7s linear infinite;
+}
+.scene-hud {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+@keyframes rocket-hover {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes flame-flicker {
+  from { transform: scaleY(0.8); opacity: 0.7; }
+  to { transform: scaleY(1.15); opacity: 1; }
+}
+@keyframes radar-sweep { to { transform: rotate(360deg); } }
+
+/* Rocket shuttle */
+.shuttle .rk-body { fill: var(--text); stroke: var(--accent); stroke-width: 1; }
+.shuttle .rk-fin { fill: var(--accent-2); }
+.shuttle .rk-window { fill: var(--accent-ink); }
+.shuttle .rk-flame {
+  fill: var(--accent-2);
+  opacity: 0.85;
+  transform-origin: left center;
+  animation: shuttle-flame 0.18s ease-in-out infinite alternate;
+}
+@keyframes shuttle-flame {
+  from { transform: scaleX(0.75); opacity: 0.7; }
+  to { transform: scaleX(1.1); opacity: 1; }
+}
+
+/* Mission status ticker */
+.mission-ticker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mission-ticker b { font-weight: 500; color: var(--accent); }
+.mission-ticker .ticker-success { color: var(--success); }
+.mission-ticker .ticker-sep { opacity: 0.5; }
+[data-theme="aerospace"] .site-footer {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   [data-theme="aerospace"] [data-reveal] {
@@ -346,5 +516,16 @@
   [data-theme="aerospace"] .site-header nav a,
   [data-theme="aerospace"] .site-footer a {
     transition: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="aerospace"] .scene-rocket,
+  [data-theme="aerospace"] .rk-flame-big,
+  [data-theme="aerospace"] .shuttle .rk-flame,
+  [data-theme="aerospace"] .scene-radar,
+  [data-theme="aerospace"] .scene-orbit,
+  [data-theme="aerospace"] .scene-planet {
+    animation: none !important;
   }
 }

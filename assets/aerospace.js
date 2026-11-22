@@ -7,6 +7,15 @@
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   var app = document.getElementById('app');
 
+  var ROCKET_SVG =
+    '<svg viewBox="0 0 64 32" data-rocket="1" aria-hidden="true">' +
+    '<path class="rk-flame" d="M10 16 L0 12 L3 16 L0 20 Z" />' +
+    '<path class="rk-body" d="M12 16 C12 9 22 5 34 5 L44 5 C53 5 59 10 59 16 C59 22 53 27 44 27 L34 27 C22 27 12 23 12 16 Z" />' +
+    '<path class="rk-fin" d="M18 25 L8 31 L20 27 Z" />' +
+    '<path class="rk-fin" d="M18 7 L8 1 L20 5 Z" />' +
+    '<circle class="rk-window" cx="44" cy="16" r="4" />' +
+    '</svg>';
+
   /* ---------- Starfield ---------- */
   var canvas = document.createElement('canvas');
   canvas.id = 'starfield';
@@ -165,12 +174,119 @@
     }, 55);
   }
 
+  /* ---------- Rocket shuttle ---------- */
+  function replaceShuttles() {
+    var svgs = document.querySelectorAll('.shuttle svg, .marquee-shuttle svg');
+    for (var i = 0; i < svgs.length; i++) {
+      if (svgs[i].getAttribute('data-rocket')) continue;
+      svgs[i].outerHTML = ROCKET_SVG;
+    }
+  }
+
+  /* ---------- Mission scene (replaces the badminton court) ---------- */
+  function buildMissionScene() {
+    var stage = document.querySelector('.court-stage');
+    if (!stage || stage.querySelector('.mission-scene')) return;
+    var scene = document.createElement('div');
+    scene.className = 'mission-scene';
+    scene.setAttribute('aria-hidden', 'true');
+    scene.innerHTML =
+      '<div class="scene-glow"></div>' +
+      '<div class="scene-planet planet-a"></div>' +
+      '<div class="scene-planet planet-b"></div>' +
+      '<div class="scene-orbit"><span class="scene-sat"></span></div>' +
+      '<div class="scene-rocket">' +
+        '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+          '<path class="rk-flame-big" d="M26 52 L32 64 L38 52 Z" />' +
+          '<path class="rk-body-big" d="M32 2 C40 10 44 22 44 34 L44 48 L20 48 L20 34 C20 22 24 10 32 2 Z" />' +
+          '<path class="rk-fin-big" d="M20 40 L9 56 L21 50 Z" />' +
+          '<path class="rk-fin-big" d="M44 40 L55 56 L43 50 Z" />' +
+          '<circle class="rk-window-big" cx="32" cy="28" r="6" />' +
+        '</svg>' +
+      '</div>';
+    stage.prepend(scene);
+    var plane = stage.querySelector('.court-plane');
+    if (plane && !plane.querySelector('.scene-radar')) {
+      plane.insertAdjacentHTML('afterbegin',
+        '<div class="scene-radar"></div>' +
+        '<div class="scene-hud">Mission control</div>');
+    }
+  }
+
+  /* ---------- Theme copy ---------- */
+  function applyThemeCopy() {
+    var hint = document.querySelector('.home-hero .hint');
+    if (hint && !hint.getAttribute('data-theme-copy')) {
+      hint.setAttribute('data-theme-copy', '1');
+      hint.textContent = 'Every node is a mission. Pick one and the rocket will fly you there.';
+    }
+    var h1 = document.querySelector('.page-head h1');
+    if (h1 && h1.textContent.trim() === 'Out.' && !h1.getAttribute('data-theme-copy')) {
+      h1.setAttribute('data-theme-copy', '1');
+      h1.textContent = 'SIGNAL LOST.';
+      var head = h1.closest('.page-head') || h1.parentElement;
+      var lead = head.querySelector('.lead');
+      if (lead) lead.textContent = 'That trajectory left the launch corridor. This page does not exist.';
+      var btn = head.querySelector('.button');
+      if (btn) btn.textContent = 'Back to mission control';
+    }
+  }
+
+  /* ---------- Mission status ticker ---------- */
+  var tickerStarted = false;
+  function startTicker() {
+    if (tickerStarted) return;
+    var footer = document.querySelector('.site-footer');
+    if (!footer) return;
+    tickerStarted = true;
+    var el = document.createElement('div');
+    el.className = 'mission-ticker';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML =
+      '<span>SYSTEMS <b class="ticker-success">NOMINAL</b></span>' +
+      '<span class="ticker-sep">&middot;</span>' +
+      '<span>ALT <b data-ticker="alt">000</b></span>' +
+      '<span class="ticker-sep">&middot;</span>' +
+      '<span>VEL <b data-ticker="vel">000</b></span>' +
+      '<span class="ticker-sep">&middot;</span>' +
+      '<span>T-MINUS <b data-ticker="tminus">000</b></span>';
+    footer.insertBefore(el, footer.firstChild);
+    var alt = el.querySelector('[data-ticker="alt"]');
+    var vel = el.querySelector('[data-ticker="vel"]');
+    var tm = el.querySelector('[data-ticker="tminus"]');
+    function render(a, v, t) {
+      alt.textContent = String(a).padStart(3, '0');
+      vel.textContent = String(v).padStart(3, '0');
+      tm.textContent = String(t).padStart(3, '0');
+    }
+    if (reduceMotion.matches) { render(400, (7).toFixed(1), 10); return; }
+    var a = 400, v = 7, t = 10, dir = 1;
+    render(a, v.toFixed(1), t);
+    setInterval(function () {
+      if (document.hidden) return;
+      t -= 1;
+      if (t < 0) t = 10;
+      a += dir;
+      if (a > 420) dir = -1;
+      if (a < 380) dir = 1;
+      v = Math.max(0, Math.min(9, v + (Math.random() - 0.5) * 0.4));
+      render(a, v.toFixed(1), t);
+    }, 1000);
+  }
+
   addOrbits();
   maybeBoot();
+  replaceShuttles();
+  buildMissionScene();
+  applyThemeCopy();
+  startTicker();
   if (app) {
     var observer = new MutationObserver(function () {
       addOrbits();
       maybeBoot();
+      replaceShuttles();
+      buildMissionScene();
+      applyThemeCopy();
     });
     observer.observe(app, { childList: true, subtree: true });
   }
